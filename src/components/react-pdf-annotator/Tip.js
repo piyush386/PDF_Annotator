@@ -7,7 +7,7 @@ var _react = require("react");
 var _react2 = _interopRequireDefault(_react);
 
 require("../../assets/style/Tip.css");
-
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 var _closeurl= require("../../assets/lib/close.png");
 var _createurl= require("../../assets/lib/create.png");
 var _cancelurl= require("../../assets/lib/cancel.png");
@@ -49,18 +49,30 @@ var Tip = function (_Component) {
       onUpdate();
     }
   };
+  //componentWillMount
+  Tip.prototype.componentWillMount = function componentDidUpdate() {
+    var editText= this.props.highlight===undefined? this.state.text:
+    this.props.highlight.comment.text
+    this.setState({ text: editText });
+    this.setState({isEdit:this.props.isEdit})
+    };
+  
 
   Tip.prototype.render = function render() {
     var _this2 = this;
 
     var _props = this.props,
         onConfirm = _props.onConfirm,
-        onOpen = _props.onOpen;
+        onOpen = _props.onOpen,
+        onEdit= _props.onEdit,
+        highlight = _props.highlight,
+        isEdit =_props.isEdit;
+
     var _state = this.state,
         compact = _state.compact,
         text = _state.text,
-        emoji = _state.emoji;
-
+        emoji = _state.emoji,
+        isEdit= _state.isEdit;
 
     return _react2.default.createElement(
       "div",
@@ -89,6 +101,7 @@ var Tip = function (_Component) {
           className: "Tip__card",
           onSubmit: function onSubmit(event) {
             event.preventDefault();
+            
             onConfirm({ text: text, emoji: emoji });
           }
         },
@@ -107,8 +120,9 @@ var Tip = function (_Component) {
             width: "50%",
             placeholder: "Your comment",
             autoFocus: true,
-            value: text,
+            value:  text,
             onChange: function onChange(event) {
+              
               return _this2.setState({ text: event.target.value });
             },
             ref: function ref(node) {
@@ -123,7 +137,17 @@ var Tip = function (_Component) {
           null,
            _react2.default.createElement("input", { type: "submit", value:"" }),
            _react2.default.createElement("img",   { src:_closeurl, className:"btn_img"}),
-           compact?null:_react2.default.createElement("img",   { src:_saveurl, className:"btn_img"},
+           _props.highlight===undefined && compact?null:_react2.default.createElement("img",   { src:_createurl, className:"btn_img",
+           onClick: function onclick(event) {
+            event.preventDefault();
+            var updateText = _extends({}, highlight.comment, {
+              text: _state.text,
+              emoji: _state.emoji
+            });
+            onEdit(updateText);
+            // return _this2.setState({isEdit:false})
+          }},
+          
           ),
           // _react2.default.createElement("input", { type: "button", className: "edit" }),
          

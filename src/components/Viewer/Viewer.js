@@ -43,8 +43,17 @@ const HighlightPopup = ({ comment}) =>
 
 comment.text ? (
     <div className="Highlight__popup">
-      {comment.emoji} {comment.text}
+     
+      <Tip
+                    onOpen={null}
+                    onConfirm={(comment,position) => {
+                      this.addHighlight({  position,comment });
+
+                      
+                    }}
+                  />
     </div>
+    
   //   <Tip
   //   onOpen={transformSelection}
   //   onConfirm={comment => {
@@ -76,6 +85,38 @@ class Viewer extends Component {
     });
   }
 
+  renderEdit(updateText: object, highlight:object)
+  {
+    console.log('event',updateText);
+    highlight.comment.text= updateText.text;
+     this.editHighlight({ highlight});
+  }
+
+  renderPopUp(highlight){
+    console.log('comment',highlight);
+    var comment = highlight.comment.text;
+    return (
+      
+    <Tip
+    onOpen ={this.transformSelection}
+    isEdit={true}
+    onConfirm={(highlight) => {
+      this.addHighlight({ highlight});
+     
+    }} 
+    
+    // onEdit ={value => this.renderEdit.bind(this,value)} 
+
+    onEdit={updateText => {
+      this.renderEdit(
+        updateText,
+        highlight
+      );
+    }}
+    highlight={highlight}              
+     />
+  );
+  }
   resetHighlights = () => {
     this.setState({
       highlights: []
@@ -106,10 +147,20 @@ class Viewer extends Component {
 
   // HOW DOES THIS WORK WITHOUT T_NewHighlight being defined?
   addHighlight(highlight: T_NewHighlight) {
+    debugger;
     const { highlights } = this.state;
-
+     
     this.setState({
       highlights: [{ ...highlight, id: getNextId() }, ...highlights]
+    });
+  }
+
+  // HOW DOES THIS WORK WITHOUT T_NewHighlight being defined?
+  editHighlight(highlight: T_NewHighlight) {
+    debugger;
+    const { highlights } = this.state;
+    this.setState({
+      highlights: highlights
     });
   }
 
@@ -166,9 +217,10 @@ class Viewer extends Component {
                     onOpen={transformSelection}
                     onConfirm={comment => {
                       this.addHighlight({ content, position, comment });
-
+           
                       hideTipAndSelection();
                     }}
+                    isEdit={false}
                   />
                 )}
                 highlightTransform={(
@@ -206,7 +258,7 @@ class Viewer extends Component {
                   return (
                     
                     <Popup
-                      popupContent={<HighlightPopup {...highlight} />}
+                      popupContent={this.renderPopUp(highlight)}
                       onMouseOver={popupContent =>
                         setTip(highlight, highlight => popupContent)
                       }
@@ -228,6 +280,7 @@ class Viewer extends Component {
 }
 
 export default Viewer;
+
 
 
 
